@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.beyzatopcu.todolist.dto.UserDto;
 import com.beyzatopcu.todolist.entity.User;
 import com.beyzatopcu.todolist.repository.UserRepository;
 
@@ -17,31 +18,44 @@ public class UserServiceImpl implements UserService {
 	private BCryptPasswordEncoder passwordEncoder;
 
 	@Override
-	public boolean save(User user) {
-		if (!checkUserValidity(user)) {
+	public boolean save(UserDto userDto) {
+		if (!checkUserValidity(userDto)) {
 			return false;
 		}
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		User user = new User();
+		user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+		user.setUsername(userDto.getUsername());
 		userRepository.save(user);
 
 		return true;
 	}
 
 	@Override
-	public User findByUsername(String username) {
+	public UserDto findByUsername(String username) {
 		
 		if (userRepository.existsByUsername(username)) {
-			return userRepository.findByUsername(username);
+			User user = userRepository.findByUsername(username);
+			UserDto userDto = new UserDto();
+			userDto.setPassword(user.getPassword());
+			userDto.setUsername(user.getUsername());
+			
+			return userDto;
 		}
 		
 		return null;
 	}
 
-	private boolean checkUserValidity(User user) {
+	private boolean checkUserValidity(UserDto user) {
 		if (user.getUsername() == null || user.getUsername().trim().length() == 0) {
 			return false;
 		}
 		if (user.getPassword() == null || user.getPassword().trim().length() == 0) {
+			return false;
+		}
+		if (user.getPasswordConfirm() == null || user.getPasswordConfirm().trim().length() == 0) {
+			return false;
+		}
+		if (!user.getPassword().equals(user.getPasswordConfirm())) {
 			return false;
 		}
 

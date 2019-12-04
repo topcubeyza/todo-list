@@ -1,5 +1,7 @@
 package com.beyzatopcu.todolist.service;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,7 +29,7 @@ public class SecurityServiceImpl implements SecurityService {
 	}
 
 	@Override
-	public void autoLogin(String username, String password) {
+	public boolean autoLogin(String username, String password) {
 		
 		UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 		
@@ -37,7 +39,16 @@ public class SecurityServiceImpl implements SecurityService {
 		
 		if (usernamePasswordAuthenticationToken.isAuthenticated()) {
 			SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+			return true;
 		}
+		
+		return false;
+	}
+	
+	@Override
+	public boolean logout() {
+		SecurityContextHolder.getContext().setAuthentication(null);
+		return true;
 	}
 
 }
