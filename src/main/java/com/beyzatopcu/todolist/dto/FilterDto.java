@@ -4,10 +4,17 @@ import java.util.Date;
 
 public class FilterDto {
 	
+	private Long todoListId;
 	private boolean status;
 	private boolean isExpired;
 	private String name;
 	
+	public Long getTodoListId() {
+		return todoListId;
+	}
+	public void setTodoListId(Long todoListId) {
+		this.todoListId = todoListId;
+	}
 	public boolean isStatus() {
 		return status;
 	}

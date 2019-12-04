@@ -78,7 +78,7 @@ public class TodoItem {
 		this.deadline = deadline;
 	}
 
-	public boolean isStatus() {
+	public boolean getStatus() {
 		return status;
 	}
 

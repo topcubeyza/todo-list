@@ -10,6 +10,7 @@ public class TodoItemDto {
 	private Date deadline;
 	private boolean status;
 	private Date createdOn;
+	private Long todoListId;
 	
 	public Long getId() {
 		return id;
@@ -35,7 +36,7 @@ public class TodoItemDto {
 	public void setDeadline(Date deadline) {
 		this.deadline = deadline;
 	}
-	public boolean isStatus() {
+	public boolean getStatus() {
 		return status;
 	}
 	public void setStatus(boolean status) {
@@ -46,6 +47,12 @@ public class TodoItemDto {
 	}
 	public void setCreatedOn(Date createdOn) {
 		this.createdOn = createdOn;
+	}
+	public Long getTodoListId() {
+		return todoListId;
+	}
+	public void setTodoListId(Long todoListId) {
+		this.todoListId = todoListId;
 	}
 	
 	
