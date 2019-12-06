@@ -1,11 +1,14 @@
 package com.beyzatopcu.todolist.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.beyzatopcu.todolist.dto.DependedDto;
+import com.beyzatopcu.todolist.dto.DependentDto;
 import com.beyzatopcu.todolist.dto.TodoItemDto;
 import com.beyzatopcu.todolist.entity.TodoItem;
 import com.beyzatopcu.todolist.repository.TodoItemRepository;
@@ -125,6 +128,52 @@ public class TodoItemServiceImpl implements TodoItemService {
 			todoItemDto.setTodoListId(todoItem.getTodoList().getId());
 			
 			return todoItemDto;
+		}
+		
+		return null;
+	}
+
+	@Override
+	public DependedDto getDependedDto(Long todoItemId) {
+		if (todoItemRepository.existsById(todoItemId)) {
+			TodoItem todoItem = todoItemRepository.getOne(todoItemId);
+			
+			TodoItem dependedItem = todoItem.getDependsOn();
+			
+			if (dependedItem == null) return null;
+			
+			DependedDto dependedDto = new DependedDto();
+			dependedDto.setId(dependedItem.getId());
+			dependedDto.setName(dependedItem.getName());
+			dependedDto.setStatus(dependedItem.getStatus());
+			
+			return dependedDto;
+		}
+		
+		return null;
+	}
+
+	@Override
+	public List<DependentDto> getDependents(Long todoItemId) {
+		if (todoItemRepository.existsById(todoItemId)) {
+			TodoItem todoItem = todoItemRepository.getOne(todoItemId);
+			
+			List<TodoItem> dependentList = todoItem.getDependentList();	
+			
+			if (dependentList == null) return null;
+			
+			List<DependentDto> dependentDtoList = new ArrayList<DependentDto>();
+			
+			DependentDto dependentDto;
+			for (TodoItem dependent: dependentList) {
+				dependentDto = new DependentDto();
+				dependentDto.setId(dependent.getId());
+				dependentDto.setName(dependent.getName());
+				
+				dependentDtoList.add(dependentDto);
+			}
+
+			return dependentDtoList;
 		}
 		
 		return null;

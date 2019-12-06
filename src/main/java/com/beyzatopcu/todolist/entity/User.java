@@ -46,6 +46,12 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	public List<TodoList> getTodoListList() {
+		return todoListList;
+	}
+	public void setTodoListList(List<TodoList> todoListList) {
+		this.todoListList = todoListList;
+	}
 	
 	
 }

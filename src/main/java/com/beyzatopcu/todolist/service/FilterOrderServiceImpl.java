@@ -9,6 +9,8 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.beyzatopcu.todolist.constants.FilterIds;
+import com.beyzatopcu.todolist.constants.OrderTypeIds;
 import com.beyzatopcu.todolist.dto.FilterDto;
 import com.beyzatopcu.todolist.dto.FilterTypeDto;
 import com.beyzatopcu.todolist.dto.OrderTypeDto;
@@ -114,9 +116,9 @@ public class FilterOrderServiceImpl implements FilterOrderService {
 
 		boolean passedStatus, passedExpired, passedName = false;
 		for (TodoItemDto todoItem : todoItemList) {
-			passedStatus = filterByStatus(todoItem, filters.get("st"));
-			passedExpired = filterByExpiration(todoItem, filters.get("ex"));
-			passedName = filterByName(todoItem, filters.get("nm"));
+			passedStatus = filterByStatus(todoItem, filters.get(FilterIds.STATUS));
+			passedExpired = filterByExpiration(todoItem, filters.get(FilterIds.EXPIRED));
+			passedName = filterByName(todoItem, filters.get(FilterIds.NAME));
 
 			if (passedExpired && passedName && passedStatus) {
 				todoItemListFiltered.add(todoItem);
@@ -165,7 +167,7 @@ public class FilterOrderServiceImpl implements FilterOrderService {
 	private List<TodoItemDto> order(List<TodoItemDto> todoItemList, OrderTypeDto orderTypeDto) {
 		Comparator<TodoItemDto> comparator = null;
 		switch (orderTypeDto.getId()) {
-		case "cd":
+		case OrderTypeIds.CREATEDATE:
 			comparator = new Comparator<TodoItemDto>() {
 				@Override
 				public int compare(TodoItemDto o1, TodoItemDto o2) {
@@ -178,7 +180,7 @@ public class FilterOrderServiceImpl implements FilterOrderService {
 				}
 			};
 			break;
-		case "dl":
+		case OrderTypeIds.DEADLINE:
 			comparator = new Comparator<TodoItemDto>() {
 
 				@Override
@@ -192,7 +194,7 @@ public class FilterOrderServiceImpl implements FilterOrderService {
 				}
 			};
 			break;
-		case "nm":
+		case OrderTypeIds.NAME:
 			comparator= new Comparator<TodoItemDto>() {
 				
 				@Override
@@ -206,7 +208,7 @@ public class FilterOrderServiceImpl implements FilterOrderService {
 				}
 			};
 			break;
-		case "st":
+		case OrderTypeIds.STATUS:
 			comparator = new Comparator<TodoItemDto>() {
 
 				@Override

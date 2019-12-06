@@ -1,10 +1,15 @@
 package com.beyzatopcu.todolist.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.beyzatopcu.todolist.dto.TodoListDto;
 import com.beyzatopcu.todolist.dto.UserAuthDto;
+import com.beyzatopcu.todolist.entity.TodoList;
 import com.beyzatopcu.todolist.entity.User;
 import com.beyzatopcu.todolist.repository.UserRepository;
 
@@ -40,6 +45,26 @@ public class UserServiceImpl implements UserService {
 			userDto.setUsername(user.getUsername());
 			
 			return userDto;
+		}
+		
+		return null;
+	}
+
+	@Override
+	public List<TodoListDto> getTodoListByUsername(String username) {
+		if (userRepository.existsByUsername(username)) {
+			User user = userRepository.findByUsername(username);
+			List<TodoListDto> todoListDtoList = new ArrayList<TodoListDto>();
+			TodoListDto todoListDto;
+			for (TodoList todoList: user.getTodoListList()) {
+				todoListDto = new TodoListDto();
+				todoListDto.setId(todoList.getId());
+				todoListDto.setName(todoList.getName());
+				
+				todoListDtoList.add(todoListDto);
+			}
+			
+			return todoListDtoList;
 		}
 		
 		return null;
