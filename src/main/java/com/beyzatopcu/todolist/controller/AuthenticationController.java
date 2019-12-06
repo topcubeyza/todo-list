@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.beyzatopcu.todolist.dto.UserDto;
+import com.beyzatopcu.todolist.dto.UserAuthDto;
 import com.beyzatopcu.todolist.service.SecurityService;
 import com.beyzatopcu.todolist.service.UserService;
 
@@ -22,14 +22,14 @@ public class AuthenticationController {
 	SecurityService securityService;
 
 	@PostMapping("/register")
-	public boolean register(@RequestBody UserDto user) {
+	public boolean register(@RequestBody UserAuthDto user) {
 		boolean isSuccessful = userService.save(user);
 		securityService.autoLogin(user.getUsername(), user.getPassword());
 		return isSuccessful;
 	}
 	
 	@PostMapping("/login")
-	public boolean login(@RequestBody UserDto user) {
+	public boolean login(@RequestBody UserAuthDto user) {
 		return securityService.autoLogin(user.getUsername(), user.getPassword());
 	}
 	

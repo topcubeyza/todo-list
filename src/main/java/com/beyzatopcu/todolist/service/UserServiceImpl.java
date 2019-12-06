@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.beyzatopcu.todolist.dto.UserDto;
+import com.beyzatopcu.todolist.dto.UserAuthDto;
 import com.beyzatopcu.todolist.entity.User;
 import com.beyzatopcu.todolist.repository.UserRepository;
 
@@ -18,7 +18,7 @@ public class UserServiceImpl implements UserService {
 	private BCryptPasswordEncoder passwordEncoder;
 
 	@Override
-	public boolean save(UserDto userDto) {
+	public boolean save(UserAuthDto userDto) {
 		if (!checkUserValidity(userDto)) {
 			return false;
 		}
@@ -31,11 +31,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserDto findByUsername(String username) {
+	public UserAuthDto findByUsername(String username) {
 		
 		if (userRepository.existsByUsername(username)) {
 			User user = userRepository.findByUsername(username);
-			UserDto userDto = new UserDto();
+			UserAuthDto userDto = new UserAuthDto();
 			userDto.setPassword(user.getPassword());
 			userDto.setUsername(user.getUsername());
 			
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
 		return null;
 	}
 
-	private boolean checkUserValidity(UserDto user) {
+	private boolean checkUserValidity(UserAuthDto user) {
 		if (user.getUsername() == null || user.getUsername().trim().length() == 0) {
 			return false;
 		}

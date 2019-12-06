@@ -1,8 +1,8 @@
 package com.beyzatopcu.todolist.service;
 
-import com.beyzatopcu.todolist.dto.UserDto;
+import com.beyzatopcu.todolist.dto.UserAuthDto;
 
 public interface UserService {
-	public boolean save(UserDto user);
-	public UserDto findByUsername(String username);
+	public boolean save(UserAuthDto user);
+	public UserAuthDto findByUsername(String username);
 }

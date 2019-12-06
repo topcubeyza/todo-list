@@ -1,8 +1,6 @@
 package com.beyzatopcu.todolist.dto;
 
-import java.util.List;
-
-public class TodoListDto {
+public class DependentDto {
 	
 	private Long id;
 	private String name;
@@ -19,5 +17,4 @@ public class TodoListDto {
 	public void setName(String name) {
 		this.name = name;
 	}
-
 }

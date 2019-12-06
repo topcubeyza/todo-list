@@ -1,11 +1,10 @@
 package com.beyzatopcu.todolist.dto;
 
-import java.util.List;
-
-public class TodoListDto {
+public class DependedDto {
 	
 	private Long id;
 	private String name;
+	private boolean status;
 	
 	public Long getId() {
 		return id;
@@ -18,6 +17,12 @@ public class TodoListDto {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public boolean isStatus() {
+		return status;
+	}
+	public void setStatus(boolean status) {
+		this.status = status;
 	}
 
 }

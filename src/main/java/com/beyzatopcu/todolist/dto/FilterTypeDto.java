@@ -1,9 +1,9 @@
 package com.beyzatopcu.todolist.dto;
 
-public class FilterDto {
-	
+public class FilterTypeDto {
+
 	private String id;
-	private Object value;
+	private String name;
 	
 	public String getId() {
 		return id;
@@ -11,11 +11,11 @@ public class FilterDto {
 	public void setId(String id) {
 		this.id = id;
 	}
-	public Object getValue() {
-		return value;
+	public String getName() {
+		return name;
 	}
-	public void setValue(Object value) {
-		this.value = value;
+	public void setName(String name) {
+		this.name = name;
 	}
-
+	
 }

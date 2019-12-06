@@ -1,6 +1,6 @@
 package com.beyzatopcu.todolist.dto;
 
-public class UserDto {
+public class UserAuthDto {
 	
 	private String username;
 	private String password;

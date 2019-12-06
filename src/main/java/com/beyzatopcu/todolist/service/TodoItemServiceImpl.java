@@ -63,16 +63,8 @@ public class TodoItemServiceImpl implements TodoItemService {
 	public boolean markComplete(Long id) {
 		if (todoItemRepository.existsById(id)) {
 			TodoItem todoItem = todoItemRepository.getOne(id);
-			List<TodoItem> dependsOnList = todoItem.getDependsOnList();
 			
-			boolean canMarkComplete = true;
-			for (TodoItem item: dependsOnList) {
-				if (!item.getStatus()) {
-					canMarkComplete = false;
-					break;
-				}
-			}
-			if (canMarkComplete) {
+			if (todoItem.getDependsOn() == null || todoItem.getDependsOn().getStatus() == true) {
 				todoItem.setStatus(true);
 				todoItemRepository.save(todoItem);
 				return true;

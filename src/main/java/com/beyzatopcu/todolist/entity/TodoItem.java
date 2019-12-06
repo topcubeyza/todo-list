@@ -10,9 +10,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 @Entity
 public class TodoItem {
@@ -30,21 +29,26 @@ public class TodoItem {
 	@JoinColumn(name = "todo_list_id")
 	private TodoList todoList;
 
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(
-			name = "todo_item_dependency", 
-			joinColumns = @JoinColumn(name = "dependent_id"), 
-			inverseJoinColumns = @JoinColumn(name = "depends_on_id")
-		)
-	private List<TodoItem> dependsOnList;
+	@ManyToOne
+	@JoinColumn(name = "depends_on_id")
+	private TodoItem dependsOn;
 
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(
-			name = "todo_item_dependency", 
-			joinColumns = @JoinColumn(name = "depends_on_id"), 
-			inverseJoinColumns = @JoinColumn(name = "dependent_id")
-		)
+	@OneToMany(
+	        mappedBy = "dependsOn",
+	        fetch = FetchType.LAZY
+	    )
 	private List<TodoItem> dependentList;
+	
+	public void addDependentTodoItem(TodoItem todoItem) {
+		if (todoItem == null || this.dependentList.contains(todoItem)) return;
+		this.dependentList.add(todoItem);
+	}
+	
+	public void removeDependentTodoItem(TodoItem todoItem) {
+		if (this.dependentList.contains(todoItem)) {
+			this.dependentList.remove(todoItem);
+		}
+	}
 
 	public Long getId() {
 		return id;
@@ -102,20 +106,20 @@ public class TodoItem {
 		this.todoList = todoList;
 	}
 
-	public List<TodoItem> getDependsOnList() {
-		return dependsOnList;
-	}
-
-	public void setDependsOnList(List<TodoItem> dependsOnList) {
-		this.dependsOnList = dependsOnList;
-	}
-
 	public List<TodoItem> getDependentList() {
 		return dependentList;
 	}
 
 	public void setDependentList(List<TodoItem> dependentList) {
 		this.dependentList = dependentList;
+	}
+
+	public TodoItem getDependsOn() {
+		return dependsOn;
+	}
+
+	public void setDependsOn(TodoItem dependsOn) {
+		this.dependsOn = dependsOn;
 	}
 
 }
