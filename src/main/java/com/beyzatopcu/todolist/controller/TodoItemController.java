@@ -49,6 +49,11 @@ public class TodoItemController {
 		}
 	}
 	
+	@PostMapping("/update")
+	public boolean updateTodoItem(@RequestBody TodoItemDetailDto todoItemDetailDto) {
+		return false;
+	}
+	
 	@GetMapping("/get/{id}")
 	public TodoItemDetailDto getTodoItem(@PathVariable Long id) {
 		TodoItemDto todoItemDto = todoItemService.getById(id);
