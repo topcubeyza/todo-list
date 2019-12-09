@@ -8,7 +8,7 @@ public class FilterOrderDto {
 	
 	private Long todoListId; 
 	private List<FilterDto> filters; 
-	private OrderTypeDto orderTypeDto;
+	private OrderTypeDto orderType;
 	
 	public Long getTodoListId() {
 		return todoListId;
@@ -23,10 +23,10 @@ public class FilterOrderDto {
 		this.filters = filters;
 	}
 	public OrderTypeDto getOrderTypeDto() {
-		return orderTypeDto;
+		return orderType;
 	}
 	public void setOrderTypeDto(OrderTypeDto orderTypeDto) {
-		this.orderTypeDto = orderTypeDto;
+		this.orderType = orderTypeDto;
 	}
 	
 	

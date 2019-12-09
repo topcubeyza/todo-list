@@ -7,10 +7,11 @@ public class TodoItemDto {
 	private Long id;
 	private String name;
 	private String description;
-	private Date deadline;
+	private String deadline;
 	private boolean status;
-	private Date createdOn;
+	private String createdOn;
 	private Long todoListId;
+	private boolean expired;
 	
 	public Long getId() {
 		return id;
@@ -30,10 +31,10 @@ public class TodoItemDto {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public Date getDeadline() {
+	public String getDeadline() {
 		return deadline;
 	}
-	public void setDeadline(Date deadline) {
+	public void setDeadline(String deadline) {
 		this.deadline = deadline;
 	}
 	public boolean getStatus() {
@@ -42,10 +43,10 @@ public class TodoItemDto {
 	public void setStatus(boolean status) {
 		this.status = status;
 	}
-	public Date getCreatedOn() {
+	public String getCreatedOn() {
 		return createdOn;
 	}
-	public void setCreatedOn(Date createdOn) {
+	public void setCreatedOn(String createdOn) {
 		this.createdOn = createdOn;
 	}
 	public Long getTodoListId() {
@@ -53,6 +54,12 @@ public class TodoItemDto {
 	}
 	public void setTodoListId(Long todoListId) {
 		this.todoListId = todoListId;
+	}
+	public boolean getExpired() {
+		return expired;
+	}
+	public void setExpired(boolean expired) {
+		this.expired = expired;
 	}
 	
 	

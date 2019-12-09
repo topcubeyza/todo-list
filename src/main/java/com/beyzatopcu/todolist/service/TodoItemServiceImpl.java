@@ -1,5 +1,7 @@
 package com.beyzatopcu.todolist.service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,22 +24,29 @@ public class TodoItemServiceImpl implements TodoItemService {
 	
 	@Autowired
 	TodoListRepository todoListRepository;
+	
+	@Autowired
+	DateHelper dateHelper;
 
 	@Override
 	public TodoItemDto add(TodoItemDto todoItemDto) {
 		if (checkValidity(todoItemDto, false)) {
 			TodoItem todoItem = new TodoItem();
 			todoItem.setCreatedOn(new Date());
-			todoItem.setDeadline(todoItemDto.getDeadline());
+			todoItem.setDeadline(dateHelper.convertStringToDate(todoItemDto.getDeadline()));
 			todoItem.setDescription(todoItemDto.getDescription());
 			todoItem.setName(todoItemDto.getName());
 			todoItem.setStatus(false);
 			todoItem.setTodoList(todoListRepository.getOne(todoItemDto.getTodoListId()));
 			
+			String todayStr = dateHelper.convertDateToString(new Date());
+			Date today = dateHelper.convertStringToDate(todayStr);
+			todoItemDto.setExpired(todoItem.getDeadline().before(today));
+			
 			todoItemRepository.save(todoItem);
 			
 			todoItemDto.setId(todoItem.getId());
-			todoItemDto.setCreatedOn(todoItem.getCreatedOn());
+			todoItemDto.setCreatedOn(dateHelper.convertDateToString(todoItem.getCreatedOn()));
 			todoItemDto.setStatus(todoItem.getStatus());
 			
 			return todoItemDto;
@@ -50,9 +59,13 @@ public class TodoItemServiceImpl implements TodoItemService {
 	public TodoItemDto update(TodoItemDto todoItemDto) {
 		if (checkValidity(todoItemDto, true)) {
 			TodoItem todoItem = todoItemRepository.getOne(todoItemDto.getId());
-			todoItem.setDeadline(todoItemDto.getDeadline());
+			todoItem.setDeadline(dateHelper.convertStringToDate(todoItemDto.getDeadline()));
 			todoItem.setDescription(todoItemDto.getDescription());
 			todoItem.setName(todoItemDto.getName());
+			
+			String todayStr = dateHelper.convertDateToString(new Date());
+			Date today = dateHelper.convertStringToDate(todayStr);
+			todoItemDto.setExpired(todoItem.getDeadline().before(today));
 			
 			todoItemRepository.save(todoItem);
 			
@@ -66,6 +79,12 @@ public class TodoItemServiceImpl implements TodoItemService {
 	public boolean markComplete(Long id) {
 		if (todoItemRepository.existsById(id)) {
 			TodoItem todoItem = todoItemRepository.getOne(id);
+			
+			String todayStr = dateHelper.convertDateToString(new Date());
+			Date today = dateHelper.convertStringToDate(todayStr);
+			if (todoItem.getDeadline().before(today)) {
+				return false;
+			}
 			
 			if (todoItem.getDependsOn() == null || todoItem.getDependsOn().getStatus() == true) {
 				todoItem.setStatus(true);
@@ -119,13 +138,17 @@ public class TodoItemServiceImpl implements TodoItemService {
 		if (todoItemRepository.existsById(id)) {
 			TodoItem todoItem = todoItemRepository.getOne(id);
 			TodoItemDto todoItemDto = new TodoItemDto();
-			todoItemDto.setCreatedOn(todoItem.getCreatedOn());
-			todoItemDto.setDeadline(todoItem.getDeadline());
+			todoItemDto.setCreatedOn(dateHelper.convertDateToString(todoItem.getCreatedOn()));
+			todoItemDto.setDeadline(dateHelper.convertDateToString(todoItem.getDeadline()));
 			todoItemDto.setDescription(todoItem.getDescription());
 			todoItemDto.setId(todoItem.getId());
 			todoItemDto.setName(todoItem.getName());
 			todoItemDto.setStatus(todoItem.getStatus());
 			todoItemDto.setTodoListId(todoItem.getTodoList().getId());
+			
+			String todayStr = dateHelper.convertDateToString(new Date());
+			Date today = dateHelper.convertStringToDate(todayStr);
+			todoItemDto.setExpired(todoItem.getDeadline().before(today));
 			
 			return todoItemDto;
 		}
@@ -190,6 +213,9 @@ public class TodoItemServiceImpl implements TodoItemService {
 			return false;
 		}
 		if (!todoListRepository.existsById(todoItemDto.getTodoListId())) {
+			return false;
+		}
+		if (dateHelper.convertStringToDate(todoItemDto.getDeadline()) == null) {
 			return false;
 		}
 		if(forUpdate) {

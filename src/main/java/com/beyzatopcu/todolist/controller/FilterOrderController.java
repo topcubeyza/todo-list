@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.beyzatopcu.todolist.dto.FilterAndOrderTypeDto;
 import com.beyzatopcu.todolist.dto.FilterOrderDto;
 import com.beyzatopcu.todolist.dto.FilterTypeDto;
 import com.beyzatopcu.todolist.dto.OrderTypeDto;
@@ -17,22 +18,24 @@ import com.beyzatopcu.todolist.service.FilterOrderService;
 
 @RestController
 @RequestMapping("filter-order")
+@Authenticate
 public class FilterOrderController {
 	
 	@Autowired
 	FilterOrderService filterOrderService;
 	
-	@GetMapping("get-filter-types")
-	public List<FilterTypeDto> getFilterTypes() {
-		return filterOrderService.getFilterTypes();
+	@GetMapping("/get-filter-order-types")
+	public FilterAndOrderTypeDto getFilterAndOrderTypes() {
+		List<FilterTypeDto> filterTypes = filterOrderService.getFilterTypes();
+		List<OrderTypeDto> orderTypes = filterOrderService.getOrderTypes();
+		FilterAndOrderTypeDto filtersAndOrders = new FilterAndOrderTypeDto();
+		filtersAndOrders.setFilterTypes(filterTypes);
+		filtersAndOrders.setOrderTypes(orderTypes);
+		
+		return filtersAndOrders;
 	}
 	
-	@GetMapping("get-order-types")
-	public List<OrderTypeDto> getOrderTypes() {
-		return filterOrderService.getOrderTypes();
-	}
-	
-	@PostMapping("filter-and-order")
+	@PostMapping("/filter-and-order")
 	public List<TodoItemDto> filterAndOrder(@RequestBody FilterOrderDto filterOrderDto) {
 		return filterOrderService.filterAndOrder(filterOrderDto.getTodoListId(), filterOrderDto.getFilters(), filterOrderDto.getOrderTypeDto());
 	}

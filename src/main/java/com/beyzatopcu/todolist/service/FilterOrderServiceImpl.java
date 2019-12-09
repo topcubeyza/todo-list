@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.beyzatopcu.todolist.constants.FilterIds;
 import com.beyzatopcu.todolist.constants.OrderTypeIds;
@@ -22,6 +23,7 @@ import com.beyzatopcu.todolist.repository.FilterTypeRepository;
 import com.beyzatopcu.todolist.repository.OrderTypeRepository;
 import com.beyzatopcu.todolist.repository.TodoListRepository;
 
+@Service
 public class FilterOrderServiceImpl implements FilterOrderService {
 
 	@Autowired
@@ -32,6 +34,9 @@ public class FilterOrderServiceImpl implements FilterOrderService {
 
 	@Autowired
 	TodoListRepository todoListRepository;
+	
+	@Autowired
+	DateHelper dateHelper;
 
 	@Override
 	public List<FilterTypeDto> getFilterTypes() {
@@ -43,6 +48,7 @@ public class FilterOrderServiceImpl implements FilterOrderService {
 			filterTypeDto = new FilterTypeDto();
 			filterTypeDto.setId(filterType.getId());
 			filterTypeDto.setName(filterType.getName());
+			filterTypeDto.setType(filterType.getObjectType());
 
 			filterTypeDtoList.add(filterTypeDto);
 		}
@@ -77,13 +83,17 @@ public class FilterOrderServiceImpl implements FilterOrderService {
 			TodoItemDto todoItemDto;
 			for (TodoItem todoItem : todoItemList) {
 				todoItemDto = new TodoItemDto();
-				todoItemDto.setCreatedOn(todoItem.getCreatedOn());
-				todoItemDto.setDeadline(todoItem.getDeadline());
+				todoItemDto.setCreatedOn(dateHelper.convertDateToString(todoItem.getCreatedOn()));
+				todoItemDto.setDeadline(dateHelper.convertDateToString(todoItem.getDeadline()));
 				todoItemDto.setDescription(todoItem.getDescription());
 				todoItemDto.setId(todoItem.getId());
 				todoItemDto.setName(todoItem.getName());
 				todoItemDto.setStatus(todoItem.getStatus());
 				todoItemDto.setTodoListId(todoItem.getTodoList().getId());
+				
+				String todayStr = dateHelper.convertDateToString(new Date());
+				Date today = dateHelper.convertStringToDate(todayStr);
+				todoItemDto.setExpired(todoItem.getDeadline().before(today));
 
 				todoItemDtoList.add(todoItemDto);
 			}
@@ -146,7 +156,9 @@ public class FilterOrderServiceImpl implements FilterOrderService {
 		Boolean expired;
 		if (expiredObj instanceof Boolean) {
 			expired = (Boolean) expiredObj;
-			return (todoItem.getDeadline().compareTo(new Date()) < 0) == expired;
+			String todayStr = dateHelper.convertDateToString(new Date());
+			Date today = dateHelper.convertStringToDate(todayStr);
+			return (dateHelper.convertStringToDate(todoItem.getDeadline()).compareTo(today) < 0) == expired;
 		} else {
 			return true;
 		}

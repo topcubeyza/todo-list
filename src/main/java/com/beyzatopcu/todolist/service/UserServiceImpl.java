@@ -18,9 +18,6 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserRepository userRepository;
-	
-	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
 
 	@Override
 	public boolean save(UserAuthDto userDto) {
@@ -28,7 +25,7 @@ public class UserServiceImpl implements UserService {
 			return false;
 		}
 		User user = new User();
-		user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+		user.setPassword(userDto.getPassword());
 		user.setUsername(userDto.getUsername());
 		userRepository.save(user);
 
@@ -68,6 +65,18 @@ public class UserServiceImpl implements UserService {
 		}
 		
 		return null;
+	}
+
+	@Override
+	public boolean canLogIn(UserAuthDto userAuthDto) {
+		if (userRepository.existsByUsername(userAuthDto.getUsername())) {
+			User user = userRepository.findByUsername(userAuthDto.getUsername());
+			if (user.getPassword().equalsIgnoreCase(userAuthDto.getPassword())) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	private boolean checkUserValidity(UserAuthDto user) {

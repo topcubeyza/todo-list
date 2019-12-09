@@ -2,6 +2,11 @@ package com.beyzatopcu.todolist.controller;
 
 import java.util.List;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,16 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.beyzatopcu.todolist.dto.TodoItemDto;
 import com.beyzatopcu.todolist.dto.TodoListDto;
-import com.beyzatopcu.todolist.service.SecurityService;
 import com.beyzatopcu.todolist.service.TodoListService;
 import com.beyzatopcu.todolist.service.UserService;
 
 @RestController
 @RequestMapping("todolist")
+@Authenticate
 public class TodoListController {
-	
-	@Autowired
-	SecurityService securityService;
 	
 	@Autowired
 	TodoListService todoListService;
@@ -35,19 +37,46 @@ public class TodoListController {
 	}
 	
 	@PostMapping("/create")
-	public TodoListDto createTodoList(@RequestBody TodoListDto todoListDto) {
-		return todoListService.add(todoListDto);
+	public TodoListDto createTodoList(@RequestBody TodoListDto todoListDto, HttpServletRequest req, HttpServletResponse res) {
+		String username = "";
+	    Cookie[] cookies = req.getCookies();
+	    if (cookies == null) {
+	    	res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+	    	return null;
+	    }
+	    for (Cookie cookie: cookies) {
+	    	if (cookie.getName().equalsIgnoreCase("username") && cookie.getValue().length() > 0) {
+	    		username = cookie.getValue();
+	    	}
+	    }
+	    
+		return todoListService.add(todoListDto, username);
 	}
 	
 	@PostMapping("/delete")
-	public boolean deleteTodoItem(@RequestBody Long id) {
-		return todoListService.delete(id);
+	public Long deleteTodoList(@RequestBody TodoListDto todoListDto) {
+		return todoListService.delete(todoListDto.getId()) ? todoListDto.getId() : null;
 	}
 	
-	@PostMapping("/get-todo-lists-of-user")
-	public List<TodoListDto> getTodoListOfUser() {
-		String username = securityService.findLoggedInUsername();
-		return userService.getTodoListByUsername(username);
+	@GetMapping("/get-todo-lists-of-user")
+	public List<TodoListDto> getTodoListOfUser(HttpServletRequest req, HttpServletResponse res) {
+	    String username;
+	    Cookie[] cookies = req.getCookies();
+	    if (cookies == null) {
+	    	res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+	    	return null;
+	    }
+	    for (Cookie cookie: cookies) {
+	    	if (cookie.getName().equalsIgnoreCase("username") && cookie.getValue().length() > 0) {
+	    		username = cookie.getValue();
+	    		List<TodoListDto> lists = userService.getTodoListByUsername(username);
+	    	    return lists;
+	    	}
+	    }
+
+    	res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    	return null;
+	    
 	}
 
 }

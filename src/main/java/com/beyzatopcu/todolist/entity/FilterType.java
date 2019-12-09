@@ -13,6 +13,7 @@ public class FilterType {
 	@Column(insertable = true, nullable = false, unique = true, updatable = false, length = 2)
 	private String id;
 	private String name;
+	private String objectType;
 	
 
 	public String getId() {
@@ -26,5 +27,11 @@ public class FilterType {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public String getObjectType() {
+		return objectType;
+	}
+	public void setObjectType(String objectType) {
+		this.objectType = objectType;
 	}
 }

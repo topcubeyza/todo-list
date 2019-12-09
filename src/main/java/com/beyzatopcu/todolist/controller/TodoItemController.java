@@ -21,6 +21,7 @@ import com.beyzatopcu.todolist.service.TodoItemService;
 
 @RestController
 @RequestMapping("todoitem")
+@Authenticate
 public class TodoItemController {
 	
 	@Autowired
@@ -35,8 +36,8 @@ public class TodoItemController {
 	}
 	
 	@PostMapping("/delete")
-	public boolean deleteTodoItem(@RequestBody Long todoItemId) {
-		return todoItemService.delete(todoItemId);
+	public boolean deleteTodoItem(@RequestBody TodoItemDto todoItemDto) {
+		return todoItemService.delete(todoItemDto.getId());
 	}
 	
 	@PostMapping("/update-status")

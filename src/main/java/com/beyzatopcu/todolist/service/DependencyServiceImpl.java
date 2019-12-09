@@ -1,11 +1,13 @@
 package com.beyzatopcu.todolist.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.beyzatopcu.todolist.dto.DependencyDto;
 import com.beyzatopcu.todolist.entity.TodoItem;
 import com.beyzatopcu.todolist.repository.TodoItemRepository;
 
+@Service
 public class DependencyServiceImpl implements DependencyService {
 	
 	@Autowired
