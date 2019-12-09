@@ -18,13 +18,13 @@ import com.beyzatopcu.todolist.repository.TodoListRepository;
 
 @Service
 public class TodoItemServiceImpl implements TodoItemService {
-	
+
 	@Autowired
 	TodoItemRepository todoItemRepository;
-	
+
 	@Autowired
 	TodoListRepository todoListRepository;
-	
+
 	@Autowired
 	DateHelper dateHelper;
 
@@ -38,20 +38,20 @@ public class TodoItemServiceImpl implements TodoItemService {
 			todoItem.setName(todoItemDto.getName());
 			todoItem.setStatus(false);
 			todoItem.setTodoList(todoListRepository.getOne(todoItemDto.getTodoListId()));
-			
+
 			String todayStr = dateHelper.convertDateToString(new Date());
 			Date today = dateHelper.convertStringToDate(todayStr);
 			todoItemDto.setExpired(todoItem.getDeadline().before(today));
-			
+
 			todoItemRepository.save(todoItem);
-			
+
 			todoItemDto.setId(todoItem.getId());
 			todoItemDto.setCreatedOn(dateHelper.convertDateToString(todoItem.getCreatedOn()));
 			todoItemDto.setStatus(todoItem.getStatus());
-			
+
 			return todoItemDto;
 		}
-		
+
 		return null;
 	}
 
@@ -62,48 +62,48 @@ public class TodoItemServiceImpl implements TodoItemService {
 			todoItem.setDeadline(dateHelper.convertStringToDate(todoItemDto.getDeadline()));
 			todoItem.setDescription(todoItemDto.getDescription());
 			todoItem.setName(todoItemDto.getName());
-			
+
+			todoItemRepository.save(todoItem);
+
 			String todayStr = dateHelper.convertDateToString(new Date());
 			Date today = dateHelper.convertStringToDate(todayStr);
 			todoItemDto.setExpired(todoItem.getDeadline().before(today));
-			
-			todoItemRepository.save(todoItem);
-			
+
 			return todoItemDto;
 		}
-		
+
 		return null;
 	}
-	
+
 	@Override
 	public boolean markComplete(Long id) {
 		if (todoItemRepository.existsById(id)) {
 			TodoItem todoItem = todoItemRepository.getOne(id);
-			
+
 			String todayStr = dateHelper.convertDateToString(new Date());
 			Date today = dateHelper.convertStringToDate(todayStr);
 			if (todoItem.getDeadline().before(today)) {
 				return false;
 			}
-			
+
 			if (todoItem.getDependsOn() == null || todoItem.getDependsOn().getStatus() == true) {
 				todoItem.setStatus(true);
 				todoItemRepository.save(todoItem);
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	@Override
 	public boolean markIncomplete(Long id) {
 		if (todoItemRepository.existsById(id)) {
 			TodoItem todoItem = todoItemRepository.getOne(id);
 			List<TodoItem> dependentList = todoItem.getDependentList();
-			
+
 			boolean canMarkIncomplete = true;
-			for (TodoItem item: dependentList) {
+			for (TodoItem item : dependentList) {
 				if (item.getStatus()) {
 					canMarkIncomplete = false;
 					break;
@@ -115,7 +115,7 @@ public class TodoItemServiceImpl implements TodoItemService {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -123,14 +123,28 @@ public class TodoItemServiceImpl implements TodoItemService {
 	public boolean delete(Long id) {
 		if (todoItemRepository.existsById(id)) {
 			TodoItem todoItem = todoItemRepository.getOne(id);
-			List<TodoItem> dependentList = todoItem.getDependentList();
-			if (dependentList.size() == 0) {
-				todoItemRepository.delete(todoItem);
-				return true;
-			}
+			removeDependencies(todoItem);
+			todoItemRepository.delete(todoItem);
+			return true;
 		}
-		
+
 		return false;
+	}
+
+	private void removeDependencies(TodoItem todoItem) {
+		TodoItem dependedTodoItem = todoItem.getDependsOn();
+		if (dependedTodoItem != null) {
+			List<TodoItem> dependentsOfDepended = dependedTodoItem.getDependentList();
+			dependentsOfDepended.remove(todoItem);
+			dependedTodoItem.setDependentList(dependentsOfDepended);
+			todoItemRepository.save(dependedTodoItem);
+		}
+
+		List<TodoItem> dependents = todoItem.getDependentList();
+		for (TodoItem dependent : dependents) {
+			dependent.setDependsOn(null);
+			todoItemRepository.save(dependent);
+		}
 	}
 
 	@Override
@@ -145,14 +159,14 @@ public class TodoItemServiceImpl implements TodoItemService {
 			todoItemDto.setName(todoItem.getName());
 			todoItemDto.setStatus(todoItem.getStatus());
 			todoItemDto.setTodoListId(todoItem.getTodoList().getId());
-			
+
 			String todayStr = dateHelper.convertDateToString(new Date());
 			Date today = dateHelper.convertStringToDate(todayStr);
 			todoItemDto.setExpired(todoItem.getDeadline().before(today));
-			
+
 			return todoItemDto;
 		}
-		
+
 		return null;
 	}
 
@@ -160,19 +174,20 @@ public class TodoItemServiceImpl implements TodoItemService {
 	public DependedDto getDependedDto(Long todoItemId) {
 		if (todoItemRepository.existsById(todoItemId)) {
 			TodoItem todoItem = todoItemRepository.getOne(todoItemId);
-			
+
 			TodoItem dependedItem = todoItem.getDependsOn();
-			
-			if (dependedItem == null) return null;
-			
+
+			if (dependedItem == null)
+				return null;
+
 			DependedDto dependedDto = new DependedDto();
 			dependedDto.setId(dependedItem.getId());
 			dependedDto.setName(dependedItem.getName());
 			dependedDto.setStatus(dependedItem.getStatus());
-			
+
 			return dependedDto;
 		}
-		
+
 		return null;
 	}
 
@@ -180,28 +195,29 @@ public class TodoItemServiceImpl implements TodoItemService {
 	public List<DependentDto> getDependents(Long todoItemId) {
 		if (todoItemRepository.existsById(todoItemId)) {
 			TodoItem todoItem = todoItemRepository.getOne(todoItemId);
-			
-			List<TodoItem> dependentList = todoItem.getDependentList();	
-			
-			if (dependentList == null) return null;
-			
+
+			List<TodoItem> dependentList = todoItem.getDependentList();
+
+			if (dependentList == null)
+				return null;
+
 			List<DependentDto> dependentDtoList = new ArrayList<DependentDto>();
-			
+
 			DependentDto dependentDto;
-			for (TodoItem dependent: dependentList) {
+			for (TodoItem dependent : dependentList) {
 				dependentDto = new DependentDto();
 				dependentDto.setId(dependent.getId());
 				dependentDto.setName(dependent.getName());
-				
+
 				dependentDtoList.add(dependentDto);
 			}
 
 			return dependentDtoList;
 		}
-		
+
 		return null;
 	}
-	
+
 	private boolean checkValidity(TodoItemDto todoItemDto, boolean forUpdate) {
 		if (todoItemDto.getName() == null || todoItemDto.getName().trim().length() == 0) {
 			return false;
@@ -218,15 +234,15 @@ public class TodoItemServiceImpl implements TodoItemService {
 		if (dateHelper.convertStringToDate(todoItemDto.getDeadline()) == null) {
 			return false;
 		}
-		if(forUpdate) {
+		if (forUpdate) {
 			if (todoItemDto.getId() == null) {
 				return false;
 			}
-			if(!todoItemRepository.existsById(todoItemDto.getId())) {
+			if (!todoItemRepository.existsById(todoItemDto.getId())) {
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 

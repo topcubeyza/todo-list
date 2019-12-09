@@ -37,7 +37,15 @@ public class FilterOrderController {
 	
 	@PostMapping("/filter-and-order")
 	public List<TodoItemDto> filterAndOrder(@RequestBody FilterOrderDto filterOrderDto) {
-		return filterOrderService.filterAndOrder(filterOrderDto.getTodoListId(), filterOrderDto.getFilters(), filterOrderDto.getOrderTypeDto());
+		OrderTypeDto orderTypeDto;
+		if (filterOrderDto.getOrderId() == null) {
+			orderTypeDto = null;
+		} else {
+			orderTypeDto = new OrderTypeDto();
+			orderTypeDto.setId(filterOrderDto.getOrderId());
+			orderTypeDto.setAscending(filterOrderDto.isAscending());
+		}
+		return filterOrderService.filterAndOrder(filterOrderDto.getTodoListId(), filterOrderDto.getFilters(), orderTypeDto);
 	}
 
 }

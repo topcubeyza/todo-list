@@ -71,10 +71,13 @@ public class DependencyServiceImpl implements DependencyService {
 		
 		TodoItem dependentTodoItem = todoItemRepository.getOne(dependentTodoItemId);
 		TodoItem dependedTodoItem = todoItemRepository.getOne(dependedTodoItemId);
-		
-		// check if item already depends on another
+
+		// check if dependency already exists
 		if (dependentTodoItem.getDependsOn() != null) {
-			return false;
+
+			if (dependentTodoItem.getDependsOn().getId().longValue() == dependedTodoItemId.longValue()) {
+				return false;
+			}
 		}
 		
 		// check if two todo items belong to the same todo list
@@ -106,11 +109,15 @@ public class DependencyServiceImpl implements DependencyService {
 		
 		boolean passed = true;
 		for (TodoItem dependent: dependentTodoItem.getDependentList()) {
+			if (dependent.getId().longValue() == dependedTodoItemId) {
+				return false;
+			}
+			
 			passed = checkCircularDependency(dependent, dependedTodoItemId);
 			if (!passed) 
-				break;
+				return false;
 		}
 		
-		return passed;
+		return true;
 	}
 }

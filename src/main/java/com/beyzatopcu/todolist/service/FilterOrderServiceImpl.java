@@ -135,7 +135,7 @@ public class FilterOrderServiceImpl implements FilterOrderService {
 			}
 		}
 
-		return todoItemList;
+		return todoItemListFiltered;
 	}
 
 	private boolean filterByStatus(TodoItemDto todoItem, Object statusObj) {
@@ -177,13 +177,18 @@ public class FilterOrderServiceImpl implements FilterOrderService {
 	}
 
 	private List<TodoItemDto> order(List<TodoItemDto> todoItemList, OrderTypeDto orderTypeDto) {
+		if (orderTypeDto == null) {
+			return todoItemList;
+		}
 		Comparator<TodoItemDto> comparator = null;
 		switch (orderTypeDto.getId()) {
 		case OrderTypeIds.CREATEDATE:
 			comparator = new Comparator<TodoItemDto>() {
 				@Override
 				public int compare(TodoItemDto o1, TodoItemDto o2) {
-					int result =  o1.getCreatedOn().compareTo(o2.getCreatedOn());
+					Date d1 = dateHelper.convertStringToDate(o1.getCreatedOn());
+					Date d2 = dateHelper.convertStringToDate(o2.getCreatedOn());
+					int result =  d1.compareTo(d2);
 					if (!orderTypeDto.getAscending()) {
 						result *= -1;
 					}
@@ -197,7 +202,9 @@ public class FilterOrderServiceImpl implements FilterOrderService {
 
 				@Override
 				public int compare(TodoItemDto o1, TodoItemDto o2) {
-					int result = o1.getDeadline().compareTo(o2.getDeadline());
+					Date d1 = dateHelper.convertStringToDate(o1.getDeadline());
+					Date d2 = dateHelper.convertStringToDate(o2.getDeadline());
+					int result = d1.compareTo(d2);
 					if (!orderTypeDto.getAscending()) {
 						result *= -1;
 					}
@@ -231,8 +238,9 @@ public class FilterOrderServiceImpl implements FilterOrderService {
 					} else if (!o1.getStatus() && o2.getStatus()) {
 						result = -1;
 					}
-					
-					result = 0;
+					else {						
+						result = 0;
+					}
 					if (!orderTypeDto.getAscending()) {
 						result *= -1;
 					}

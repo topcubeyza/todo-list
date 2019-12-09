@@ -50,8 +50,8 @@ public class TodoItemController {
 	}
 	
 	@PostMapping("/update")
-	public boolean updateTodoItem(@RequestBody TodoItemDetailDto todoItemDetailDto) {
-		return false;
+	public TodoItemDto updateTodoItem(@RequestBody TodoItemDto todoItemDto) {
+		return todoItemService.update(todoItemDto);
 	}
 	
 	@GetMapping("/get/{id}")
@@ -68,12 +68,12 @@ public class TodoItemController {
 		return todoItemDetailDto;
 	}
 	
-	@PostMapping("/addDependency")
+	@PostMapping("/add-dependency")
 	public boolean addDependency(@RequestBody DependencyDto dependencyDto) {
 		return dependencyService.addDependency(dependencyDto);
 	}
 	
-	@PostMapping("/removeDependency")
+	@PostMapping("/remove-dependency")
 	public boolean removeDependency(@RequestBody DependencyDto dependencyDto) {
 		return dependencyService.removeDependency(dependencyDto);
 	}

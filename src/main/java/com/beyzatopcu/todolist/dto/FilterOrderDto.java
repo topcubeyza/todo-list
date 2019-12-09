@@ -8,7 +8,8 @@ public class FilterOrderDto {
 	
 	private Long todoListId; 
 	private List<FilterDto> filters; 
-	private OrderTypeDto orderType;
+	private String orderId;
+	private boolean ascending;
 	
 	public Long getTodoListId() {
 		return todoListId;
@@ -22,11 +23,17 @@ public class FilterOrderDto {
 	public void setFilters(List<FilterDto> filters) {
 		this.filters = filters;
 	}
-	public OrderTypeDto getOrderTypeDto() {
-		return orderType;
+	public String getOrderId() {
+		return orderId;
 	}
-	public void setOrderTypeDto(OrderTypeDto orderTypeDto) {
-		this.orderType = orderTypeDto;
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+	public boolean isAscending() {
+		return ascending;
+	}
+	public void setAscending(boolean ascending) {
+		this.ascending = ascending;
 	}
 	
 	
